@@ -7,11 +7,14 @@ skip-lint = false
 [programs.localnet]
 token_treasury = "GU1B8EVCww9jiAGu7jE4YaEnYa6W1edB7KG3oprVgPyu"
 
+[programs.devnet]
+token_treasury = "GU1B8EVCww9jiAGu7jE4YaEnYa6W1edB7KG3oprVgPyu"
+
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "devnet"
 wallet = "/Users/deok/.config/solana/id.json"
 
 [scripts]
