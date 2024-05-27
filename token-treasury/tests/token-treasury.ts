@@ -18,6 +18,8 @@ import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { TokenTreasury } from "../target/types/token_treasury";
 import { associatedAddress } from "@coral-xyz/anchor/dist/cjs/utils/token";
+import * as fs from "fs";
+import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 
 describe("token-treasury", () => {
   // Configure the client to use the local cluster.
@@ -43,10 +45,10 @@ describe("token-treasury", () => {
   const mint = mintKp.publicKey;
   const authority = authoriyKp.publicKey;
   const payer = program.provider.publicKey;
+  const [treasury, bump] = getTreasuryAddress(mint, authority);
+  const treasuryAta = associatedAddress({ mint: mint, owner: treasury });
 
   it("Initialize Treasury", async () => {
-    const [treasury, bump] = getTreasuryAddress(mint, authority);
-    const treasuryAta = associatedAddress({ mint: mint, owner: treasury });
     const mintLamport =
       await program.provider.connection.getMinimumBalanceForRentExemption(
         MINT_SIZE
@@ -82,7 +84,7 @@ describe("token-treasury", () => {
         rent: SYSVAR_RENT_PUBKEY,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
-        associatedProgram: ASSOCIATED_PROGRAM_ID
+        associatedTokenProgram: ASSOCIATED_PROGRAM_ID
       })
       .preInstructions([createMintTx, initializeMintTx])
       .postInstructions([mintTx])
@@ -93,9 +95,6 @@ describe("token-treasury", () => {
   });
 
   it("Transfer Token", async () => {
-    const [treasury, bump] = getTreasuryAddress(mint, authority);
-    const treasuryAta = associatedAddress({ mint: mint, owner: treasury });
-
     const user = PublicKey.unique();
     const userAta = associatedAddress({ mint: mint, owner: user });
 
@@ -112,11 +111,27 @@ describe("token-treasury", () => {
         rent: SYSVAR_RENT_PUBKEY,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
-        associatedProgram: ASSOCIATED_PROGRAM_ID
+        associatedTokenProgram: ASSOCIATED_PROGRAM_ID
       })
       .signers([authoriyKp])
       .rpc({ skipPreflight: true });
 
     console.log("Your transaction signature", tx);
+  });
+
+  it("write key in json", async () => {
+    const data = {
+      endpoint: program.provider.connection.rpcEndpoint,
+      mint: mint.toBase58(),
+      authority: authority.toBase58(),
+      treasury: treasury.toBase58(),
+      treasuryAta: treasuryAta.toBase58(),
+      authoritySK: bs58.encode(authoriyKp.secretKey)
+    };
+    try {
+      fs.writeFileSync("../solana.json", JSON.stringify(data));
+    } catch (err) {
+      console.log(err);
+    }
   });
 });
