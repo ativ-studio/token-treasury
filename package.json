@@ -1,0 +1,15 @@
+{
+  "name": "bonk-tx-generator",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com-sosin:ativ-studio/token-treasury.git",
+  "author": "<sosin@ativ.studio>",
+  "license": "MIT",
+  "dependencies": {
+    "@solana/web3.js": "^1.91.8"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}
