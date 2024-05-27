@@ -7,6 +7,7 @@ from solana.transaction import Transaction
 from solders.pubkey import Pubkey
 from solders.keypair import Keypair
 from spl.token.instructions import get_associated_token_address
+# token_treasury_client 디렉토리를 전부 가지고 와야함 -> 토큰 트레져리 프로그램에 대한 정의
 from token_treasury_client.instructions.transfer_token import TransferTokenArgs, TransferTokenAccounts, transfer_token
 from solana.rpc.api import Client
 
